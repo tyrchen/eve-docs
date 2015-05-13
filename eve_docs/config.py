@@ -13,7 +13,8 @@ def get_cfg():
         base = '{0}://{1}'.format(protocol, base)
 
     cfg['base'] = base
-    cfg['url_prefix'] = capp.config.get('URL_PREFIX', '')
+    cfg['url_prefix'] = capp.config.get('URL_PREFIX', '') + "/" + \
+                        capp.config.get('API_VERSION', '')
     cfg['domains'] = {}
     cfg['server_name'] = capp.config['SERVER_NAME']
     cfg['api_name'] = capp.config.get('API_NAME', 'API')
