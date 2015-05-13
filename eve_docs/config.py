@@ -3,6 +3,7 @@ from eve.utils import home_link
 from .labels import LABELS
 import re
 
+
 def get_cfg():
     cfg = {}
     base = home_link()['href']
@@ -12,6 +13,7 @@ def get_cfg():
         base = '{0}://{1}'.format(protocol, base)
 
     cfg['base'] = base
+    cfg['url_prefix'] = capp.config.get('URL_PREFIX', '')
     cfg['domains'] = {}
     cfg['server_name'] = capp.config['SERVER_NAME']
     cfg['api_name'] = capp.config.get('API_NAME', 'API')
@@ -20,7 +22,8 @@ def get_cfg():
             # hide the shadow collection for document versioning
             if 'VERSIONS' not in capp.config or not \
                     domain.endswith(capp.config['VERSIONS']):
-                cfg['domains'][domain] = paths(domain, resource)
+                cfg['domains'][domain] = paths(domain, resource,
+                                               cfg['url_prefix'])
     return cfg
 
 
@@ -65,9 +68,9 @@ def schema(resource, field=None):
     return ret
 
 
-def paths(domain, resource):
+def paths(domain, resource, prefix):
     ret = {}
-    path = '/{0}'.format(resource.get('url', domain))
+    path = '/{0}/{1}'.format(prefix, resource.get('url', domain))
     path = re.sub(r'<(?:[^>]+:)?([^>]+)>', '{\\1}', path)
     pathtype = 'resource'
     ret[path] = methods(domain, resource, pathtype)
